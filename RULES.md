@@ -16,7 +16,7 @@ Discipline examples: Sword Cultivator, Body Cultivator, Formation Master, Alchem
 
 Flaw examples: unstable meridians, arrogant, heavenly curse, demonic qi, weak constitution, karmic debt, damaged spiritual root. No penalties are defined.
 
-The six-page grouping is an interface decision, not a new game rule. Species, heritage, purity, physique and trades are free text from the prior builder context, with no inferred mechanics.
+The six-page grouping is an interface decision, not a new game rule. Special Heritage, purity, physique and trades remain free text with no inferred mechanics. Special Heritage appears only for the Beast / Plant Spirit Path.
 
 ## Attributes — proposal §1
 
@@ -70,3 +70,12 @@ Decisions still needed:
 ## Saving and compatibility
 
 Buildless static site, with relative asset paths for GitHub Pages subdirectory hosting. One current character auto-saves in this browser under xianxia-character-builder.v1. Download/open JSON supports backups and device transfer. Opening a save asks before replacement. Invalid saves are rejected; an unreadable stored save is not silently overwritten. Unknown numerical values remain blank, not zero. Browser storage failures display a download reminder.
+
+## Identity rules confirmed by the user — September 11, 2026
+
+Source: the project owner's follow-up in this task, superseding the earlier Identity draft.
+
+- Cultivation path changes story context only and gives no numerical modifiers. Demonic cultivators are more likely to fall into qi deviation or face harsher heavenly tribulations; no numerical chance or penalty is defined.
+- Origins affect only starting supplies or money appropriate to the origin. Exact allocations remain to be designed, so none are granted automatically.
+- Rename Species / beast heritage to Special Heritage. Show it only when Beast / Plant Spirit Path is selected, including on the review sheet.
+- A previously entered heritage is retained in the save when switching paths, so switching back restores it. It is hidden and inactive on other paths. The existing save key remains compatible.

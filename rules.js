@@ -9,6 +9,12 @@
     root: ['Fire Root', 'Wood Root', 'Dual Water/Ice Root', 'Heavenly Spiritual Root', 'Mutated Root'],
     flaw: ['Unstable meridians', 'Arrogant', 'Heavenly curse', 'Demonic qi', 'Weak constitution', 'Karmic debt', 'Damaged spiritual root']
   };
+  // Identity rules confirmed by the user. Keep the legacy heritage save key.
+  function hasHeritage(c) { return c.fields.path === 'Beast / Plant Spirit Path'; }
+  function pathContext(path) {
+    if (path === 'Demonic Path') return 'Demonic cultivators are more likely to experience qi deviation or face harsher heavenly tribulations. This is story context, with no numerical modifier.';
+    return path ? 'This path provides context for later story elements. It does not change stats.' : 'Choose a cultivation path to establish your story context.';
+  }
   const rootNotes = {
     'Fire Root': '+1 when aggressively manipulating fire qi. Conditional roll bonus; does not increase a core attribute.',
     'Wood Root': 'Improved healing and plant techniques. Numerical effect unspecified.',
@@ -42,7 +48,7 @@
     const derived=(base,stat,key)=>totals[stat]===null || number(c.resourceBonuses[key])===null ? null : base+totals[stat]+Number(c.resourceBonuses[key]);
     return {totals,contributions,vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.fields.root==='Fire Root'};
   }
-  const api={attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
+  const api={hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
   root.BuilderRules=api;
   if (typeof module!=='undefined') module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
