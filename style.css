@@ -90,5 +90,10 @@ dt { font-weight: bold; color: #425f51; } dd { margin: 3px 0 0; white-space: pre
 .sheet-heading h2 { margin: 0; overflow-wrap: anywhere; }
 #notice:empty { display: none; }
 #notice { color: #7b3326; }
+.starting-kit { border-left: 3px solid #9d8956; padding: 4px 18px 16px; margin: 20px 0; background: #eee7d5; }
+.starting-kit h3 { margin-top: 12px; }
+.starting-kit ul { padding-left: 24px; }
+.starting-kit li { margin: 8px 0; }
+.purse { font-size: 1.1rem; }
 @media(max-width:600px) { body { padding: 20px 12px; } nav { grid-template-columns: repeat(2,minmax(0,1fr)); } .grid, .modifier-form, .sheet-fields { grid-template-columns: 1fr; } .savebar { align-items: stretch; } #save-status { width: 100%; } }
 @media print { body { padding: 0; max-width: none; background: white; color: black; font-size: 11pt; } header, nav, .savebar, .navigation, footer, #notice, button { display: none !important; } section { border: 0; padding: 0; } .sheet-fields > div, tr { break-inside: avoid; } .table-wrap { overflow: visible; } }

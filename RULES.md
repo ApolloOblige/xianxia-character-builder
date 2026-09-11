@@ -16,7 +16,7 @@ Discipline examples: Sword Cultivator, Body Cultivator, Formation Master, Alchem
 
 Flaw examples: unstable meridians, arrogant, heavenly curse, demonic qi, weak constitution, karmic debt, damaged spiritual root. No penalties are defined.
 
-The six-page grouping is an interface decision, not a new game rule. Special Heritage, purity, physique and trades remain free text with no inferred mechanics. Special Heritage appears only for the Beast / Plant Spirit Path.
+The six-page grouping is an interface decision, not a new game rule. Special Heritage now uses the original beast-wheel catalogue through dependent dropdowns. Purity, physique and trades remain free text with no inferred mechanics. Special Heritage appears only for the Beast / Plant Spirit Path.
 
 ## Attributes — proposal §1
 
@@ -76,6 +76,10 @@ Buildless static site, with relative asset paths for GitHub Pages subdirectory h
 Source: the project owner's follow-up in this task, superseding the earlier Identity draft.
 
 - Cultivation path changes story context only and gives no numerical modifiers. Demonic cultivators are more likely to fall into qi deviation or face harsher heavenly tribulations; no numerical chance or penalty is defined.
-- Origins affect only starting supplies or money appropriate to the origin. Exact allocations remain to be designed, so none are granted automatically.
+- Origins affect only starting supplies or money appropriate to the origin. The owner subsequently authorized genre research and creative design; the implemented packages are documented in [ORIGINS.md](ORIGINS.md).
 - Rename Species / beast heritage to Special Heritage. Show it only when Beast / Plant Spirit Path is selected, including on the review sheet.
 - A previously entered heritage is retained in the save when switching paths, so switching back restores it. It is hidden and inactive on other paths. The existing save key remains compatible.
+
+## Authorized Identity expansion
+
+See [Origin packages and heritage catalogue](ORIGINS.md) for the researched house-rule allocations, online sources, exact catalogue provenance, and compatible saved-character behavior. Origin grants are kept separate from attribute modifiers and manually entered equipment. All 550 unique names in the original beast wheel are present. No new beast entries were invented.

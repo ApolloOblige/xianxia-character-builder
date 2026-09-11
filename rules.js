@@ -1,5 +1,25 @@
 /* Source-derived draft options. No implied numerical bonuses. */
 (function (root) {
+  const H=root.BuilderHeritages || (typeof require!=='undefined' ? require('./heritages.js') : null);
+  const O=root.BuilderOrigins || (typeof require!=='undefined' ? require('./origins.js') : null);
+  const own=(table,key)=>Object.prototype.hasOwnProperty.call(table,key);
+  const heritageCategories=[...Object.keys(H.groups),'Plant Spirit (custom)','Custom heritage'];
+  function inferHeritageCategory(value) {
+    return Object.keys(H.groups).find(k=>H.groups[k].includes(value)) || (value?'Custom heritage':'');
+  }
+  function setHeritageCategory(c,category) {
+    if(category && !heritageCategories.includes(category)) return;
+    c.fields.heritageCategory=category;
+    // Switching category clears the child so an incompatible old choice cannot survive.
+    c.fields.heritage='';
+  }
+  function createPackage(origin) {
+    return own(O.packages,origin) ? JSON.parse(JSON.stringify({origin,version:O.version,...O.packages[origin]})) : null;
+  }
+  function startingPackage(c) {
+    return c.startingPackage?.origin===c.fields.origin ? c.startingPackage : createPackage(c.fields.origin);
+  }
+  function setOrigin(c,origin) { c.fields.origin=origin; c.startingPackage=createPackage(origin); }
   const attributes = ['Body', 'Flow', 'Mind', 'Heart', 'Presence'];
   const descriptions = ['Strength, endurance, weapons, physical resistance', 'Qi control, movement arts, spiritual techniques', 'Investigation, formations, medicine, knowledge', 'Willpower, emotions, Dao conviction, resisting corruption', 'Intimidation, persuasion, sect etiquette, commanding spirits'];
   const options = {
@@ -22,13 +42,23 @@
     'Heavenly Spiritual Root': 'Cultivates rapidly but attracts attention. Numerical effects unspecified.',
     'Mutated Root': 'Unique advantages and problems. Details unspecified.'
   };
-  const fields = ['name','path','origin','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes'];
-  function empty() { return {version:1, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''}}; }
+  const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes'];
+  function empty() { return {version:1, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null}; }
   function number(value) { return value !== '' && value != null && Number.isFinite(Number(value)) ? Number(value) : null; }
   function validate(data) {
     if (!data || data.version !== 1 || !data.fields || !data.attributes || !Array.isArray(data.modifiers) || data.modifiers.length > 100) throw Error('This is not a supported character save. Your current character has been kept.');
     const clean = empty();
-    for (const key of fields) { if (typeof data.fields[key] !== 'string' || data.fields[key].length > 20000) throw Error('A saved field is invalid.'); clean.fields[key] = data.fields[key]; }
+    for (const key of fields) { if(key==='heritageCategory' && data.fields[key]===undefined) continue; if (typeof data.fields[key] !== 'string' || data.fields[key].length > 20000) throw Error('A saved field is invalid.'); clean.fields[key] = data.fields[key]; }
+    if(!clean.fields.heritageCategory)clean.fields.heritageCategory=inferHeritageCategory(clean.fields.heritage);
+    if(clean.fields.heritageCategory && !heritageCategories.includes(clean.fields.heritageCategory))throw Error('A saved heritage category is invalid.');
+    if(own(H.groups,clean.fields.heritageCategory) && clean.fields.heritage && !H.groups[clean.fields.heritageCategory].includes(clean.fields.heritage))throw Error('The saved heritage does not belong to its category.');
+    const pack=data.startingPackage;
+    if(pack!=null) {
+      const textOk=(v,max)=>typeof v==='string' && v.length<=max;
+      const amountOk=v=>Number.isSafeInteger(v) && v>=0 && v<=1000000;
+      if(pack.origin!==clean.fields.origin || pack.version!==1 || !textOk(pack.description,1000) || !amountOk(pack.spiritStones) || !amountOk(pack.silverTaels) || !Array.isArray(pack.items) || pack.items.length>100 || pack.items.some(i=>!i || !textOk(i.name,500) || !i.name.trim() || !amountOk(i.quantity) || i.quantity<1 || !textOk(i.note,1000)))throw Error('The saved starting package is invalid.');
+      clean.startingPackage={origin:pack.origin,version:pack.version,description:pack.description,spiritStones:pack.spiritStones,silverTaels:pack.silverTaels,items:pack.items.map(i=>({name:i.name,quantity:i.quantity,note:i.note}))};
+    } else clean.startingPackage=createPackage(clean.fields.origin);
     for (const key of attributes) { const v = data.attributes[key]; if (v !== '' && (typeof v !== 'number' || !Number.isFinite(v) || Math.abs(v)>10000)) throw Error('A saved attribute is invalid.'); clean.attributes[key]=v; }
     for (const m of data.modifiers) {
       if (!m || !attributes.includes(m.stat) || typeof m.amount !== 'number' || !Number.isFinite(m.amount) || Math.abs(m.amount)>10000 || typeof m.source !== 'string' || !m.source.trim() || m.source.length>500 || typeof m.condition !== 'string' || m.condition.length>500) throw Error('A saved modifier is invalid.');
@@ -48,7 +78,7 @@
     const derived=(base,stat,key)=>totals[stat]===null || number(c.resourceBonuses[key])===null ? null : base+totals[stat]+Number(c.resourceBonuses[key]);
     return {totals,contributions,vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.fields.root==='Fire Root'};
   }
-  const api={hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
+  const api={heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
   root.BuilderRules=api;
   if (typeof module!=='undefined') module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
