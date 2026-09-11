@@ -50,7 +50,7 @@ Flowing Moon Sword: Sword Art; Mortal High Grade; 1 Qi; +Body. 10+: 3 damage and
 
 Ghost-Walking Step: Movement Art; 1 Qi; +Flow. 10+: move anywhere in immediate battlefield without interception. 7–9: reach destination and choose extra Qi, exposure, lost carried item or unwanted attention.
 
-Technique grades proposed: Mortal / Earth / Heaven / Dao / Immortal, with Low / Middle / High / Supreme. The over-realm +2 Qi and 1 Deviation example is not a universal scaling rule. No techniques or inventory are granted automatically.
+Technique grades proposed: Mortal / Earth / Heaven / Dao / Immortal, with Low / Middle / High / Supreme. The over-realm +2 Qi and 1 Deviation example is not a universal scaling rule. No techniques are granted automatically; origins grant the starting inventory documented below.
 
 ## Superseded and unresolved
 
@@ -62,7 +62,7 @@ Decisions still needed:
 
 1. Confirm the proposed five attributes, array and root effects.
 2. Supply the canonical rank/stage table, permitted starting realm and per-realm resource bonuses.
-3. Supply root catalogue, combination/purity constraints, physiques and heritage effects.
+3. Supply root catalogue, combination/purity constraints, physiques.
 4. Define starting techniques, equipment, trades and numerical modifiers, stacking/caps and prerequisites.
 5. Resolve Heaven's Thread: §19 says “begins each session with 3” and also “does not automatically refresh.” No automatic refresh implemented.
 6. Define Wound effects, Deviation limits, XP costs, cultivation and Insight thresholds. The §21 sample counters are examples, not defaults.
@@ -83,3 +83,7 @@ Source: the project owner's follow-up in this task, superseding the earlier Iden
 ## Authorized Identity expansion
 
 See [Origin packages and heritage catalogue](ORIGINS.md) for the researched house-rule allocations, online sources, exact catalogue provenance, and compatible saved-character behavior. Origin grants are kept separate from attribute modifiers and manually entered equipment. All 550 unique names in the original beast wheel are present. No new beast entries were invented.
+
+## Current heritage rules
+
+The owner authorized original modifiers and plant choices. [HERITAGE-RULES.md](HERITAGE-RULES.md) defines the implemented archetype bonuses and design references. These supersede earlier statements that heritage had no automatic effect. Specific heritage names are flavor only. Development notes are excluded from the player interface. Other unresolved systems above remain future design work.

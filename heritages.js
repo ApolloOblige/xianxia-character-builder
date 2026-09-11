@@ -580,6 +580,70 @@
     "Nian Beast"
   ]
 };
+  Object.assign(groups, {
+  "Tree Spirit": [
+    "Pine",
+    "Willow",
+    "Peach Tree",
+    "Plum Tree",
+    "Ginkgo",
+    "Banyan",
+    "Cypress",
+    "Camphor Tree",
+    "Maple",
+    "Mulberry"
+  ],
+  "Flower Spirit": [
+    "Lotus",
+    "White Lotus",
+    "Red Lotus",
+    "Peony",
+    "Orchid",
+    "Chrysanthemum",
+    "Osmanthus",
+    "Camellia",
+    "Lily",
+    "Moonflower"
+  ],
+  "Bamboo / Grass Spirit": [
+    "Bamboo",
+    "Jade Bamboo",
+    "Purple Bamboo",
+    "Reed",
+    "Silvergrass",
+    "Rice",
+    "Millet",
+    "Sword Grass"
+  ],
+  "Vine Spirit": [
+    "Wisteria",
+    "Honeysuckle",
+    "Grape Vine",
+    "Ivy",
+    "Gourd Vine",
+    "Morning Glory",
+    "Thorn Vine",
+    "Moonlit Creeper"
+  ],
+  "Medicinal Plant Spirit": [
+    "Ginseng",
+    "Astragalus",
+    "Mugwort",
+    "Goji",
+    "Licorice",
+    "Angelica",
+    "Snow Lotus",
+    "Spirit Tea"
+  ],
+  "Fungus Spirit": [
+    "Lingzhi Mushroom",
+    "Red Lingzhi",
+    "White Lingzhi",
+    "Snow Fungus",
+    "Wood Ear Mushroom",
+    "Cloudcap Mushroom"
+  ]
+});
   const api = { groups, source: 'https://chatgpt.com/c/6a9b3b58-0160-83e9-88d7-bfd32ef9276d', sourceTurn: 'dc7f0e23-fa60-4a3e-8b12-750613b79a3e' };
   root.BuilderHeritages = api;
   if (typeof module !== 'undefined') module.exports = api;
