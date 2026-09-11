@@ -97,3 +97,9 @@ dt { font-weight: bold; color: #425f51; } dd { margin: 3px 0 0; white-space: pre
 .purse { font-size: 1.1rem; }
 @media(max-width:600px) { body { padding: 20px 12px; } nav { grid-template-columns: repeat(2,minmax(0,1fr)); } .grid, .modifier-form, .sheet-fields { grid-template-columns: 1fr; } .savebar { align-items: stretch; } #save-status { width: 100%; } }
 @media print { body { padding: 0; max-width: none; background: white; color: black; font-size: 11pt; } header, nav, .savebar, .navigation, footer, #notice, button { display: none !important; } section { border: 0; padding: 0; } .sheet-fields > div, tr { break-inside: avoid; } .table-wrap { overflow: visible; } }
+
+.root-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px; }
+.root-card { border:1px solid #b8a77b; padding:16px; background:#fffdf7; }
+.root-card p { margin:8px 0; }
+.root-toggle input { width:auto; margin-right:8px; }
+.root-card:has(input:checked) { border-color:#2f463b; background:#edf0e5; }

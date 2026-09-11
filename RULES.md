@@ -87,3 +87,7 @@ See [Origin packages and heritage catalogue](ORIGINS.md) for the researched hous
 ## Current heritage rules
 
 The owner authorized original modifiers and plant choices. [HERITAGE-RULES.md](HERITAGE-RULES.md) defines the implemented archetype bonuses and design references. These supersede earlier statements that heritage had no automatic effect. Specific heritage names are flavor only. Development notes are excluded from the player interface. Other unresolved systems above remain future design work.
+
+## Cultivation expansion — September 11, 2026
+
+[CULTIVATION-RULES.md](CULTIVATION-RULES.md) supersedes the earlier unresolved realm, root and physique notes above. The full world ladder was recovered from older chat turns, including the five-stage Body Tempering correction. Authorized resource, purity and situational-effect rules now accompany those choices.

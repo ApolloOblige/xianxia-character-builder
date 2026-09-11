@@ -1,5 +1,6 @@
 /* Source-derived draft options. No implied numerical bonuses. */
 (function (root) {
+  const C=root.BuilderCultivation || (typeof require!=='undefined' ? require('./cultivation.js') : null);
   const H=root.BuilderHeritages || (typeof require!=='undefined' ? require('./heritages.js') : null);
   const O=root.BuilderOrigins || (typeof require!=='undefined' ? require('./origins.js') : null);
   const own=(table,key)=>Object.prototype.hasOwnProperty.call(table,key);
@@ -71,11 +72,15 @@
     'Mutated Root': 'An unusual affinity expressed through your techniques.'
   };
   const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes'];
-  function empty() { return {version:1, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null}; }
+  function empty() { return {version:1, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
   function number(value) { return value !== '' && value != null && Number.isFinite(Number(value)) ? Number(value) : null; }
   function validate(data) {
     if (!data || data.version !== 1 || !data.fields || !data.attributes || !Array.isArray(data.modifiers) || data.modifiers.length > 100) throw Error('This is not a supported character save. Your current character has been kept.');
     const clean = empty();
+    if(data.roots!=null){
+      if(!Array.isArray(data.roots)||data.roots.length>5||new Set(data.roots.map(r=>r?.name)).size!==data.roots.length||data.roots.some(r=>!r||!own(C.roots,r.name)||(r.purity!==''&&(!Number.isInteger(r.purity)||r.purity<1||r.purity>100))))throw Error('Choose up to five different roots, each with purity from 1 to 100.');
+      clean.roots=data.roots.map(r=>({name:r.name,purity:r.purity}));
+    }
     for (const key of fields) { if(key==='heritageCategory' && data.fields[key]===undefined) continue; if (typeof data.fields[key] !== 'string' || data.fields[key].length > 20000) throw Error('A saved field is invalid.'); clean.fields[key] = data.fields[key]; }
     if(clean.fields.heritageCategory==='Plant Spirit (custom)') clean.fields.heritageCategory='Plant Spirit';
     if(!clean.fields.heritageCategory)clean.fields.heritageCategory=inferHeritageCategory(clean.fields.heritage);
@@ -100,16 +105,23 @@
   function compile(c) {
     const totals = {}, contributions = {};
     const heritage=heritageBonus(c);
+    const cultivation=C.effects(c);
     for (const stat of attributes) {
       contributions[stat]=c.modifiers.filter(m=>m.stat===stat && !m.condition.trim());
       if(heritage?.stat===stat) contributions[stat]=[heritage,...contributions[stat]];
       const base=number(c.attributes[stat]);
       totals[stat]=base===null ? null : base+contributions[stat].reduce((sum,m)=>sum+m.amount,0);
     }
-    const derived=(base,stat,key)=>totals[stat]===null || number(c.resourceBonuses[key])===null ? null : base+totals[stat]+Number(c.resourceBonuses[key]);
-    return {totals,contributions,heritage,vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.fields.root==='Fire Root'};
+    const derived=(base,stat,key)=>{
+      const automatic=key==='vitality'?cultivation.realmVitality:cultivation.realmQi;
+      const physique=key==='vitality'?cultivation.physiqueVitality:cultivation.physiqueQi;
+      const extra=number(c.resourceBonuses[key]);
+      if(totals[stat]===null || (automatic===null && extra===null))return null;
+      return base+totals[stat]+(automatic||0)+physique+(extra||0);
+    };
+    return {totals,contributions,heritage,cultivation,vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.roots===null && c.fields.root==='Fire Root'};
   }
-  const api={heritageTraits,heritageBonus,heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
+  const api={cultivation:C,heritageTraits,heritageBonus,heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
   root.BuilderRules=api;
   if (typeof module!=='undefined') module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
