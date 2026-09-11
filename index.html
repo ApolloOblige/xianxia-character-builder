@@ -3,32 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create and save a xianxia character, with sourced choices and a compiled reference sheet.">
   <link rel="stylesheet" href="style.css">
+  <script src="rules.js" defer></script><script src="app.js" defer></script>
   <title>Xianxia Character Builder</title>
 </head>
-
 <body>
-
-  <h1>〔Xianxia Character Builder〕</h1>
-
-  <section>
-    <h2>〔Character Basics〕</h2>
-
-    <label for="character-name">Character Name</label>
-    <br>
-    <input id="character-name" type="text" placeholder="Enter character name">
-
-    <br><br>
-
-    <label for="cultivation-path">Cultivation Path</label>
-    <br>
-    <select id="cultivation-path">
-      <option>Righteous Path</option>
-      <option>Demonic Path</option>
-      <option>Beast / Plant Spirit Path</option>
-      <option>Ghost Path</option>
-    </select>
-  </section>
-
-</body>
-</html>
+  <header><p class="eyebrow">CHARACTER RECORD · D&D × MOTW</p><h1>〔Xianxia Character Builder〕</h1>
+  <p>Build your character one step at a time. Return to any step to change a choice.</p></header>
+  <div class="savebar"><span id="save-status" role="status">Your choices save in this browser.</span><button id="export">Download save</button><label class="file-button">Open save<input type="file" id="import" accept=".json,application/json"></label></div>
+  <p id="notice" role="alert"></p><nav id="steps" aria-label="Character creation steps"></nav>
+  <main id="panel"></main>
+  <div class="navigation"><button id="back">Back</button><span id="progress"></span><button id="next" class="primary">Continue</button></div>
+  <footer><p>Saved on this device and browser only. Download a save to keep a backup or move to another device.</p><details><summary>Rules and sources</summary><p>This is a draft ruleset. Examples in the source are labeled as proposals, and undefined bonuses are never silently treated as confirmed rules.</p><p><a href="https://chatgpt.com/share/6aa37e7a-0b14-83ea-8bc7-f8ccdf31d25b" target="_blank" rel="noopener">RPG design conversation</a> · <a href="https://chatgpt.com/share/6aa24e27-77c4-83ea-aeea-aadd966af79b" target="_blank" rel="noopener">World reference</a> · <a href="RULES.md">Extracted rules and open questions</a></p></details></footer>
+  <noscript><p>This character builder needs JavaScript enabled to save choices and calculate totals.</p></noscript>
+</body></html>
