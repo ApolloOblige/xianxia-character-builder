@@ -1,5 +1,6 @@
 /* Source-derived draft options. No implied numerical bonuses. */
 (function (root) {
+  const T=root.BuilderTraining || (typeof require!=='undefined' ? require('./training.js') : null);
   const C=root.BuilderCultivation || (typeof require!=='undefined' ? require('./cultivation.js') : null);
   const H=root.BuilderHeritages || (typeof require!=='undefined' ? require('./heritages.js') : null);
   const O=root.BuilderOrigins || (typeof require!=='undefined' ? require('./origins.js') : null);
@@ -54,7 +55,7 @@
   const options = {
     path: ['Righteous Path', 'Demonic Path', 'Beast / Plant Spirit Path', 'Ghost Path'],
     origin: ['Sect Disciple', 'Rogue Cultivator', 'Clan Heir', 'Wandering Doctor', 'Spirit Beast in Human Form', 'Demonic Cultivator', 'Mortal Scholar', 'Fallen Young Master'],
-    discipline: ['Sword Cultivator', 'Body Cultivator', 'Formation Master', 'Alchemist', 'Talisman Master', 'Beast Tamer', 'Gu Cultivator', 'Demonic Cultivator', 'Music Cultivator', 'Ghost Cultivator'],
+    discipline: Object.keys(T.disciplines),
     root: ['Fire Root', 'Wood Root', 'Dual Water/Ice Root', 'Heavenly Spiritual Root', 'Mutated Root'],
     flaw: ['Unstable meridians', 'Arrogant', 'Heavenly curse', 'Demonic qi', 'Weak constitution', 'Karmic debt', 'Damaged spiritual root']
   };
@@ -71,7 +72,7 @@
     'Heavenly Spiritual Root': 'Cultivates rapidly but attracts attention. ',
     'Mutated Root': 'An unusual affinity expressed through your techniques.'
   };
-  const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes'];
+  const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'];
   function empty() { return {version:1, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
   function number(value) { return value !== '' && value != null && Number.isFinite(Number(value)) ? Number(value) : null; }
   function validate(data) {
@@ -81,7 +82,11 @@
       if(!Array.isArray(data.roots)||data.roots.length>5||new Set(data.roots.map(r=>r?.name)).size!==data.roots.length||data.roots.some(r=>!r||(!own(C.roots,r.name)&&!['Yin','Yang'].includes(r.name))||(r.polarity!==undefined&&!['None','Yin','Yang'].includes(r.polarity))||(r.purity!==''&&(!Number.isInteger(r.purity)||r.purity<1||r.purity>100))))throw Error('Choose up to five different roots, each with purity from 1 to 100.');
       clean.roots=data.roots.filter(r=>!['Yin','Yang'].includes(r.name)).map(r=>({name:r.name,purity:r.purity,...(r.polarity!==undefined?{polarity:r.polarity}:{})}));
     }
-    for (const key of fields) { if(key==='heritageCategory' && data.fields[key]===undefined) continue; if (typeof data.fields[key] !== 'string' || data.fields[key].length > 20000) throw Error('A saved field is invalid.'); clean.fields[key] = data.fields[key]; }
+    for (const key of fields) { if(['heritageCategory','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'].includes(key) && data.fields[key]===undefined) continue; if (typeof data.fields[key] !== 'string' || data.fields[key].length > 20000) throw Error('A saved field is invalid.'); clean.fields[key] = data.fields[key]; }
+    for(const [keys,table] of [[['manualPrimary','manualSecondary'],T.manuals],[['tradePrimary','tradeSecondary'],T.trades],[['talent'],T.talents]]){
+      const values=keys.map(k=>clean.fields[k]).filter(Boolean);
+      if(values.some(v=>!own(table,v))||new Set(values).size!==values.length)throw Error('A saved training selection is invalid or repeated.');
+    }
     const oldPolarities=(data.roots||[]).filter(r=>['Yin','Yang'].includes(r.name));
     if(oldPolarities.length)clean.fields.rootsDetail+=(clean.fields.rootsDetail?'\n':'')+'Unassigned polarity: '+oldPolarities.map(r=>r.name+' ('+(r.purity===''?'purity not set':r.purity+'%')+')').join(', ')+'. Choose which elemental root each polarity belongs to.';
     if(clean.fields.heritageCategory==='Plant Spirit (custom)') clean.fields.heritageCategory='Plant Spirit';
@@ -121,9 +126,9 @@
       if(totals[stat]===null || (automatic===null && extra===null))return null;
       return base+totals[stat]+(automatic||0)+physique+(extra||0);
     };
-    return {totals,contributions,heritage,cultivation,vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.roots===null && c.fields.root==='Fire Root'};
+    return {totals,contributions,heritage,cultivation,training:T.effects(c),vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.roots===null && c.fields.root==='Fire Root'};
   }
-  const api={cultivation:C,heritageTraits,heritageBonus,heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
+  const api={training:T,cultivation:C,heritageTraits,heritageBonus,heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
   root.BuilderRules=api;
   if (typeof module!=='undefined') module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

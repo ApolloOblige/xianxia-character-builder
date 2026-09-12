@@ -91,3 +91,7 @@ The owner authorized original modifiers and plant choices. [HERITAGE-RULES.md](H
 ## Cultivation expansion — September 11, 2026
 
 [CULTIVATION-RULES.md](CULTIVATION-RULES.md) supersedes the earlier unresolved realm, root and physique notes above. The full world ladder was recovered from older chat turns, including the five-stage Body Tempering correction. Authorized resource, purity and situational-effect rules now accompany those choices.
+
+## Disciplines and training expansion
+
+[TRAINING-RULES.md](TRAINING-RULES.md) defines the implemented discipline, manual, trade and talent choices, weapon grants, shared situational bonus cap and sources. It supersedes earlier statements that no discipline equipment was granted.
