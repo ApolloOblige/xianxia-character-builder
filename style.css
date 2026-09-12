@@ -109,3 +109,6 @@ dt { font-weight: bold; color: #425f51; } dd { margin: 3px 0 0; white-space: pre
 .technique-card h4 { margin:0 0 8px; }
 .technique-card input { width:auto; margin-right:8px; }
 .technique-card p { margin:8px 0; }
+
+.companion-portrait {display:block;width:100%;max-width:560px;height:auto;border-radius:8px;margin:1rem 0;}
+@media print {.companion-portrait{max-width:260px;}}

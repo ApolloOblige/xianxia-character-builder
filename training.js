@@ -410,5 +410,17 @@ function effects(c){
  const ms=selected(['manualPrimary','manualSecondary'],manuals),ts=selected(['tradePrimary','tradeSecondary'],trades),talent=get(talents,c.fields.talent);
  return {discipline:d,weapon:d?.weapon||'',manuals:ms,trades:ts,talent:talent?{name:c.fields.talent,...talent}:null,conditional:[...ms,...ts,...(talent?[{name:c.fields.talent,...talent}]:[])].map(x=>({source:x.name,amount:1,condition:x.condition}))};
 }
-const api={disciplines,manuals,trades,talents,effects};root.BuilderTraining=api;if(typeof module!=='undefined')module.exports=api;
+
+const beastGroups={'Shadow Beasts':['Vault-Devouring Rat']};
+const infusionTraits={Metal:'Condense shadow teeth for precise gnawing; +1 to bite through an exposed metal seam.',Wood:'Nurture the shadow core; +1 to withstand cultivation strain from a suitable organic essence.',Water:'Flow around obstacles; +1 to escape through a wet or slippery passage.',Fire:'Kindle ember-dark teeth; +1 to consume combustible residue. Using the glow reveals your position.',Earth:'Anchor the shadow core; +1 to resist being pushed or pulled while grounded.',Ice:'Chill the silhouette; +1 to preserve a delicate object held in the mouth.',Lightning:'Charge the paws; +1 to a short burst of movement. The discharge can reveal the rat.',Wind:'Lighten the shadow body; +1 to balance on narrow ledges.',Poison:'Separate tainted essence; +1 to identify poisonous residue by scent, not immunity to it.',Light:'Illuminate an inspected seam; +1 to reveal concealed inscriptions. The glow prevents shadow concealment.',Shadow:'Deepen the native shadow body; +1 to suppress spiritual traces. This does not stack with Shadowborn on the same roll.'};
+function companion(c){
+ const b=c.companion;if(c.fields.discipline!=='Beast Tamer'||!b||!beastGroups[b.category]?.includes(b.species))return null;
+ const C=root.BuilderCultivation||(typeof require!=='undefined'?require('./cultivation.js'):null),r=C.realms[b.realm];if(!r)return null;
+ const rank=r.rank,tier=rank<2?0:rank<4?1:rank<6?2:rank<9?3:4;
+ const sizes=['Handheld · 15–25 cm body','Cat-sized · 30–50 cm body','Hound-sized · 70–100 cm body','Panther-sized · 1.2–1.8 m body','Great shadow beast · 2–3 m body'];
+ const attrs={Body:[-1,0,1,2,2][tier],Flow:[2,2,3,3,3][tier],Mind:[0,1,1,2,2][tier],Heart:[0,1,2,2,3][tier],Presence:[-1,-1,0,1,2][tier]};
+ const infusion=(c.roots||[]).find(r=>r.name===b.infusion),speed=[9,12,15,18,21][tier];
+ return {...b,rank,tier,size:sizes[tier],attributes:attrs,vitality:Math.max(1,6+attrs.Body+rank*2),qi:3+attrs.Flow+rank,speed,infusion:infusion?{...infusion,effect:infusionTraits[infusion.name]}:null};
+}
+const api={beastGroups,infusionTraits,companion,disciplines,manuals,trades,talents,effects};root.BuilderTraining=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
