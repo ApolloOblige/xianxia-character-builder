@@ -78,10 +78,12 @@
     if (!data || data.version !== 1 || !data.fields || !data.attributes || !Array.isArray(data.modifiers) || data.modifiers.length > 100) throw Error('This is not a supported character save. Your current character has been kept.');
     const clean = empty();
     if(data.roots!=null){
-      if(!Array.isArray(data.roots)||data.roots.length>5||new Set(data.roots.map(r=>r?.name)).size!==data.roots.length||data.roots.some(r=>!r||!own(C.roots,r.name)||(r.purity!==''&&(!Number.isInteger(r.purity)||r.purity<1||r.purity>100))))throw Error('Choose up to five different roots, each with purity from 1 to 100.');
-      clean.roots=data.roots.map(r=>({name:r.name,purity:r.purity}));
+      if(!Array.isArray(data.roots)||data.roots.length>5||new Set(data.roots.map(r=>r?.name)).size!==data.roots.length||data.roots.some(r=>!r||(!own(C.roots,r.name)&&!['Yin','Yang'].includes(r.name))||(r.polarity!==undefined&&!['None','Yin','Yang'].includes(r.polarity))||(r.purity!==''&&(!Number.isInteger(r.purity)||r.purity<1||r.purity>100))))throw Error('Choose up to five different roots, each with purity from 1 to 100.');
+      clean.roots=data.roots.filter(r=>!['Yin','Yang'].includes(r.name)).map(r=>({name:r.name,purity:r.purity,...(r.polarity!==undefined?{polarity:r.polarity}:{})}));
     }
     for (const key of fields) { if(key==='heritageCategory' && data.fields[key]===undefined) continue; if (typeof data.fields[key] !== 'string' || data.fields[key].length > 20000) throw Error('A saved field is invalid.'); clean.fields[key] = data.fields[key]; }
+    const oldPolarities=(data.roots||[]).filter(r=>['Yin','Yang'].includes(r.name));
+    if(oldPolarities.length)clean.fields.rootsDetail+=(clean.fields.rootsDetail?'\n':'')+'Unassigned polarity: '+oldPolarities.map(r=>r.name+' ('+(r.purity===''?'purity not set':r.purity+'%')+')').join(', ')+'. Choose which elemental root each polarity belongs to.';
     if(clean.fields.heritageCategory==='Plant Spirit (custom)') clean.fields.heritageCategory='Plant Spirit';
     if(!clean.fields.heritageCategory)clean.fields.heritageCategory=inferHeritageCategory(clean.fields.heritage);
     if(clean.fields.heritageCategory && !heritageCategories.includes(clean.fields.heritageCategory))throw Error('A saved heritage category is invalid.');

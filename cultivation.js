@@ -30,9 +30,53 @@
     ['Poison','毒','Mutated','Wood and Yin corruption; contamination and decay.','Wood / Yin','Fire / Yang','identifying, refining or controlling Poison qi'],
     ['Light','光','Mutated','Yang-dominant radiance, revelation and purification.','Yang / Fire','Yin / Shadow','revealing concealment or purifying with Light qi'],
     ['Shadow','影','Mutated','Yin-dominant concealment, silence and obscurity.','Yin / Water','Yang / Light','concealing yourself or suppressing a qi signature with Shadow'],
-    ['Yin','陰','Polar','Cold, inward movement, stillness and night.','Water / Metal / Ice / Shadow','Yang','stabilizing cold or inward-flowing Yin qi'],
-    ['Yang','陽','Polar','Heat, vitality, movement and outward force.','Fire / Wood / Lightning / Light','Yin','circulating vigorous Yang qi or repelling Yin interference']
   ].forEach(([name,symbol,kind,description,resonance,weakness,condition])=>roots[name]={symbol,kind,description,resonance,weakness,condition});
+  const polarities={
+  "Metal": [
+    "Silent, precise severing; qi contracts into fine threads.",
+    "Explosive, radiant weapon qi; forceful cutting waves."
+  ],
+  "Wood": [
+    "Slow rooting, preserved vitality and quiet regeneration.",
+    "Rapid growth, vigorous regeneration and erupting vines."
+  ],
+  "Water": [
+    "Deep, cold, still water that absorbs and contains.",
+    "Rushing torrents, crashing waves and forceful currents."
+  ],
+  "Fire": [
+    "Ghost flame, cold flame and hidden embers that suppress spiritual activity.",
+    "Blazing solar flame, radiant heat and explosive combustion."
+  ],
+  "Earth": [
+    "Deep, dense earth that contains, seals and absorbs vibration.",
+    "Rising stone, upheaval and outward bursts of crushing force."
+  ],
+  "Ice": [
+    "Still, preserving frost and deep, binding cold.",
+    "Rapid crystallization, erupting ice spikes and forceful shattering."
+  ],
+  "Lightning": [
+    "Quiet, concentrated pulses that numb and suppress.",
+    "Thunderous arcs, explosive speed and stimulating surges."
+  ],
+  "Wind": [
+    "Silent drafts, concealing currents and inward-drawing vortices.",
+    "Roaring gales, driving pressure and outward gusts."
+  ],
+  "Poison": [
+    "Slow, hidden toxins that stagnate qi and suppress vitality.",
+    "Fast-acting, agitating toxins that accelerate corrosive breakdown."
+  ],
+  "Light": [
+    "Soft, contained illumination, reflective veils and inward revelation.",
+    "Dazzling radiance, exposing beams and outward purification."
+  ],
+  "Shadow": [
+    "Deep concealment, quiet qi and stable fields of absence.",
+    "Moving silhouettes, projected doubles and forceful shadow tendrils; overt motion sacrifices concealment."
+  ]
+};
   const physiques={};
   [
     ['Balanced Physique',0,0,'maintaining balance during a cultivation or breakthrough roll','No innate elemental specialization.'],
@@ -69,5 +113,5 @@
     const selected=c.roots||[];
     return {realm,physique,realmVitality:vitality,realmQi:qi,physiqueVitality:physique?.vitality||0,physiqueQi:physique?.qi||0,roots:selected.map(r=>({...r,...get(roots,r.name)}))};
   }
-  const api={realms,roots,physiques,effects};root.BuilderCultivation=api;if(typeof module!=='undefined')module.exports=api;
+  const api={realms,roots,polarities,physiques,effects};root.BuilderCultivation=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

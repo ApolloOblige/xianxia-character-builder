@@ -6,7 +6,7 @@ Recovered from [Xianxia Worldbuilding Setup](https://chatgpt.com/c/6a9b3b58-0160
 
 The realm sequence is Mortal, Body Tempering (5 stages), Qi Refining (7), Foundation Establishment (7), Golden Core (5), Nascent Soul (5), Spirit Transformation (4), Dao Integration (3), Heavenly Gate (3), Earth Immortal (3), Spirit Immortal (3), Celestial Immortal (3), True Immortal (3). From Dao Integration onward the stages are Early, Middle, Late. Ascension is a transition, and divine authority is a separate jurisdiction rather than an extra cultivation realm. Lifespan ranges and final-stage breakthroughs follow that chat. Body Tempering uses the owner's corrected five stages.
 
-The five ordinary roots, six mutated roots, Yin/Yang polar roots and their resonance/suppression relationships follow the user's supplied reference. All 15 common physiques are retained; named rare and heavenly examples include the character's Taiyin Body. The broader source discussions are inspiration, not universal rules shared by every xianxia novel.
+The five ordinary roots, six mutated roots and attached Yin/Yang polarities and their resonance/suppression relationships follow the user's supplied reference. All 15 common physiques are retained; named rare and heavenly examples include the character's Taiyin Body. The broader source discussions are inspiration, not universal rules shared by every xianxia novel.
 
 ## Numerical house rules added with authorization
 
@@ -29,3 +29,11 @@ Existing free-text realm, stage, roots and purity remain stored and visible. Old
 - [D&D Free Rules: Creating a Character](https://www.dndbeyond.com/sources/dnd/br-2024/creating-a-character): structured character choices inform the creation flow; D&D ability scores and leveling tables are not transplanted into the 2d6 system.
 
 Development references stay outside the player-facing interface.
+
+## Yin and Yang correction
+
+Yin and Yang are attached qualities of an elemental root, never standalone root selections. Each root allows None, Yin or Yang. A matching expression grants +1 on that root's technique, within the existing combined +2 situational cultivation cap. It does not raise purity, change resource capacity or grant another element.
+
+The chat's examples (turn 51268cca-f67b-4359-99d5-3df9f80b8e59) establish Yin Fire as ghost/cold flame or hidden ember, Yang Fire as solar flame, Yin Water as deep and still, Yang Water as a torrent, Yin Metal as silent severing, and Yang Metal as explosive weapon qi. The Shadow discussion (1cb71e16-c7f2-4e27-b29b-f79c125ed8ec) supplies Yin concealment and Yang's challenge to stable concealment. Other manifestations are authorized original extensions. Yang Shadow emphasizes projected motion while sacrificing still concealment. External opposing Yang can still suppress Shadow; a cultivated expression is not immunity.
+
+Existing standalone Yin/Yang selections and their purity are preserved as unassigned polarity notes. They are not silently attached to an arbitrary root. Saved elemental roots remain intact.
