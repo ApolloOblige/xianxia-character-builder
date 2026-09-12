@@ -6,7 +6,7 @@ const signed = n => n === null || n === '' ? 'Not set' : (n >= 0 ? '+' : '') + n
 let character = R.empty(), storageBlocked = false;
 try { const raw = localStorage.getItem(KEY); if (raw) character = R.validate(JSON.parse(raw)); }
 catch { storageBlocked = true; $('notice').textContent = 'Your previous save could not be read. It has not been overwritten. Download your work before closing this page.'; }
-const titles = ['Identity','Cultivation','Disciplines & gear','Attributes','Story & bonds','Review'];
+const titles = ['Identity','Cultivation','Disciplines & gear','Techniques','Attributes','Story & bonds','Review'];
 const labels = {name:'Character name',path:'Cultivation path',origin:'Origin',heritageCategory:'Heritage archetype',heritage:'Special Heritage',realm:'Cultivation realm',stage:'Stage',root:'Spiritual root',rootsDetail:'Your spiritual roots and proportions',purity:'Root purity',physique:'Physique',discipline:'Discipline',techniques:'Manual and technique notes',equipment:'Weapons and equipment',trade:'Additional trade and talent notes',dao:'Dao seed / conviction',flaw:'Flaw',bonds:'Bonds',reputation:'Reputation / face',karma:'Karmic debts, enmities and oaths',notes:'Other notes',manualPrimary:'Primary manual',manualSecondary:'Supporting manual',tradePrimary:'Primary trade',tradeSecondary:'Secondary trade',talent:'Natural talent'};
 function save() {
   if (storageBlocked) { $('save-status').textContent='Automatic saving unavailable — download a save.'; return; }
@@ -134,11 +134,33 @@ function trainingPage(){
  return '<h3>1 · Discipline</h3><p>Choose your primary approach to cultivation. A profession can be studied alongside any combat discipline.</p>'+knownSelector('discipline',Object.keys(R.training.disciplines),'Choose a discipline')+'<div id="discipline-details">'+disciplineDetails()+'</div><h3>2 · Cultivation manuals</h3><p>Choose up to two manuals. The recommended manual for your discipline appears first; you may study other approaches. Each describes a body of training rather than a single attack.</p><div id="manual-choices">'+manualChoices()+'</div><p>These are introductory teachings. Practice and your realm determine what you can perform. Elemental methods need the named root or a suitable external source; weapons, ingredients, tools and bonded creatures must be available.</p>'+field('techniques','Add personal manuals, teachers or techniques you have developed.',true)+'<h3>3 · Trades & talents</h3><p>Choose up to two apprentice trades and one natural talent. Training provides expertise; crafting still requires time, tools and materials.</p><div id="trade-choices">'+tradeChoices()+'</div>'+trainingChoice('talent',R.training.talents,'Optional natural talent')+'<div id="talent-details">'+trainingDetails(character.fields.talent,R.training.talents)+'</div>'+field('trade','Record other experience or specializations.',true)+'<p>Use only one +1 bonus from manuals, trades or talents per roll. Together with root, polarity, resonance and physique benefits, positive situational adjustments are capped at +2 before drawbacks.</p><h3>4 · Weapons & equipment</h3><div id="discipline-equipment" aria-live="polite">'+disciplineEquipment()+'</div>'+field('equipment','Record additional weapons, equipment and personal belongings. Discipline equipment and origin supplies are included separately below and on your sheet.',true)+packageSummary();
 }
 
+
+function qiRestReference(){
+ const qi=R.compile(character).qi;
+ return '<div class="starting-kit"><h3>Qi & cultivation rests</h3><p><strong>Maximum Qi: '+(qi===null?'Complete your realm and attributes':qi)+'</strong>. Pay the listed cost from your remaining Qi whenever you use an art. 0-Qi arts are repeatable; paid arts require enough Qi. Companion arts use the tamer’s reserve.</p><p><strong>Brief cultivation:</strong> '+esc(R.techniques.rest.brief)+(qi!==null?' Recover '+Math.ceil(Math.max(0,qi)/2)+' Qi.':'')+'</p><p><strong>Full cultivation:</strong> '+esc(R.techniques.rest.full)+'</p><small>'+esc(R.techniques.rest.limits)+'</small></div>';
+}
+function techniqueCard(a,editable=false){
+ const unlocked=R.techniques.available(character).some(x=>x.id===a.id),checked=character.learnedTechniques.includes(a.id);
+ return '<article class="technique-card"><h4>'+(editable?'<label><input type="checkbox" data-art="'+a.id+'" '+(checked?'checked ':'')+(!unlocked?'disabled ':'')+'>'+esc(a.name)+'</label>':esc(a.name))+'</h4><p><strong>'+(a.qi===0?'0 Qi · repeatable':a.qi+' Qi'+(a.id==='quiet-devouring'?' additional':''))+'</strong> · '+esc(a.timing)+'</p><p>'+esc(a.effect)+'</p><small><strong>Limits:</strong> '+esc(a.limit)+'</small><small><strong>Resolution:</strong> '+esc(a.roll)+'</small>'+(!unlocked&&editable?'<small>Requires study of Chapter '+a.chapter+'.</small>':'')+'</article>';
+}
+function techniquesPage(){
+ const A=R.techniques,active=A.hasManual(character);
+ let body='<p>Mark the arts you have learned. Only learned arts from a selected manual and a studied chapter appear on your reference sheet.</p>'+qiRestReference();
+ if(!active)return body+'<p>Select the Silent Vault-Rat Scripture as a primary or supporting manual on Disciplines & Gear to choose its arts.</p><p>Your selected manuals have no selectable arts in this catalogue yet.</p>';
+ body+='<h3>Silent Vault-Rat Scripture</h3><p>One deeply bonded Artifact-Devouring Rat. Scout, enter unseen, disable what matters and escape. Selecting this manual does not create a companion; bond-dependent arts require your rat to be present and able to act.</p><label for="manual-chapter">Chapter reached through study</label><select id="manual-chapter" data-study="vaultRatChapter">'+A.chapters.map((name,i)=>'<option value="'+(i+1)+'" '+(character.manualStudy.vaultRatChapter===i+1?'selected':'')+'>Chapter '+(i+1)+' · '+esc(name)+'</option>').join('')+'</select><p>Choose the chapter your character has actually studied. Learning an art does not automatically master every advanced use.</p><p id="technique-count" role="status">'+A.selected(character).length+' learned arts on your sheet.</p>';
+ body+=A.chapters.map((chapter,i)=>'<h3>Chapter '+(i+1)+' · '+esc(chapter)+'</h3><div class="technique-grid">'+A.arts.filter(a=>a.chapter===i+1).map(a=>techniqueCard(a,true)).join('')+'</div>').join('');
+ return body+'<p>When an outcome is uncertain or opposed, roll the listed attribute using the normal 2d6 rules. Pay Qi even if the roll fails. An action takes your main turn; a reaction is an immediate response, at most once per round. A scene is one continuous encounter. Technique, training and cultivation bonuses share the existing +2 positive situational limit. Learning or selecting an art does not spend Qi.</p>';
+}
+function techniqueSheet(){
+ const arts=R.techniques.selected(character);
+ return '<h3>Learned techniques</h3>'+(arts.length?'<p>Silent Vault-Rat Scripture · Chapter '+character.manualStudy.vaultRatChapter+'. Requires the bonded companion where stated. Pay Qi when used, including on a failed roll. All positive situational bonuses share the +2 limit.</p>'+arts.map(a=>techniqueCard(a)).join(''):'<p>No active learned techniques selected.</p>')+qiRestReference();
+}
+
 function review() {
   const c=R.compile(character);
   return `<div class="sheet-heading"><h2 tabindex="-1">〔${esc(character.fields.name)||'Unnamed character'}〕</h2><button id="print">Print sheet</button></div>
   <dl class="sheet-fields">${R.fields.filter(k=>!['name','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'].includes(k) && (!['heritage','heritageCategory'].includes(k) || R.hasHeritage(character))).map(k=>`<div><dt>${labels[k]}</dt><dd>${esc(character.fields[k])||'Not set'}</dd></div>`).join('')}</dl>
-  ${trainingSummary()}<h3>Cultivation reference</h3>${cultivationSummary()}<h3>Identity context</h3><p>${esc(R.pathContext(character.fields.path))}</p>${packageSummary(true)}${statTable(c)}<h3>Modifiers and conditions</h3>${heritageEffect()}${modifierList()}${c.fire?'<p><strong>+1 — Fire Root</strong>: only when aggressively manipulating fire qi. Does not increase a core attribute.</p>':''}${character.roots===null && R.rootNotes[character.fields.root]?`<p>${esc(R.rootNotes[character.fields.root])}</p>`:''}
+  ${trainingSummary()}${techniqueSheet()}<h3>Cultivation reference</h3>${cultivationSummary()}<h3>Identity context</h3><p>${esc(R.pathContext(character.fields.path))}</p>${packageSummary(true)}${statTable(c)}<h3>Modifiers and conditions</h3>${heritageEffect()}${modifierList()}${c.fire?'<p><strong>+1 — Fire Root</strong>: only when aggressively manipulating fire qi. Does not increase a core attribute.</p>':''}${character.roots===null && R.rootNotes[character.fields.root]?`<p>${esc(R.rootNotes[character.fields.root])}</p>`:''}
   <h3>Vitality and Qi</h3>${resourceSummary(c)}<h3>Quick reference</h3><p>Roll 2d6 + attribute. 10+: success; 7–9: success with a consequence; 6 or less: failure and a GM move. Difficulty adjustments: trivial +1, equal cultivation 0, dangerous −1, superior −2, overwhelming −3. Apply to the roll only.</p><p>Bonds range from −2 to +3. At +2 or higher, gain +1 once per session when directly protecting or supporting that NPC. Reputation ranges from −3 (hated) to +3 (revered). Neither is a permanent attribute increase.</p>`;
 }
 function render(focus=false) {
@@ -148,14 +170,24 @@ function render(focus=false) {
   if(n===0) body='<p>Choose your path and origin. Blank fields can be completed later.</p>'+field('name')+pathSelector()+originSelector()+'<div id="heritage-field" '+(R.hasHeritage(character)?'':'hidden')+'><h3>Special Heritage</h3>'+heritageSelector()+'</div>';
   if(n===1) body=cultivationPage();
   if(n===2) body=trainingPage();
-  if(n===3) body=`<p class="draft">Distribute +2, +1, +1, 0, −1 among your base attributes. Your heritage bonus is added automatically.</p><div class="attribute-inputs">${R.attributes.map((s,i)=>`<div class="field"><label for="a-${s}">${s}</label><input id="a-${s}" type="number" min="-10000" max="10000" step="any" data-stat="${s}" value="${esc(character.attributes[s])}"><small>${R.descriptions[i]}</small></div>`).join('')}</div><h3>Add a modifier you have agreed with your GM</h3><p>Only unconditional entries add to totals. Always name the source; use a condition for situational effects.</p><form id="modifier-form" class="modifier-form"><label>Attribute<select name="stat">${R.attributes.map(s=>`<option>${s}</option>`).join('')}</select></label><label>Amount<input name="amount" type="number" min="-10000" max="10000" step="any" required></label><label>Source<input name="source" placeholder="Rule or item granting this bonus" maxlength="500" required></label><label>Condition (optional)<input name="condition" placeholder="Only when…" maxlength="500"></label><button class="primary">Add modifier</button></form>${modifierList(true)}<div id="live-totals" aria-live="polite">${statTable(R.compile(character))}</div><h3>Vitality and Qi</h3><p>Realm, stage and physique bonuses are included automatically. Use these optional adjustments for other resource effects.</p><div class="grid">${['vitality','qi'].map(k=>`<label>${k==='vitality'?'Additional Vitality adjustment':'Additional Qi adjustment'}<input type="number" min="-10000" max="10000" step="any" data-resource="${k}" value="${esc(character.resourceBonuses[k])}"></label>`).join('')}</div><div id="live-resources">${resourceSummary(R.compile(character))}</div>`;
-  if(n===4) body=field('dao','A belief, question or obsession that may become your Dao.',true)+field('flaw','Choose a flaw that can complicate your journey.')+field('bonds','NPC, relationship and bond rating. Range: −2 to +3.',true)+field('reputation','Track standing separately for each faction. Range: −3 to +3.',true)+field('karma','Record debts, enmities and oaths; karma is distinct from morality.',true)+field('notes','Record resources, wounds and advancement.',true);
-  $('panel').innerHTML='<section>'+(n===5?review():`<h2 tabindex="-1">〔${titles[n]}〕</h2>${body}`)+'</section>';
-  $('back').disabled=n===0; $('next').hidden=n===5; $('progress').textContent=`Step ${n+1} of 6`;
+  if(n===3) body=techniquesPage();
+  if(n===4) body=`<p class="draft">Distribute +2, +1, +1, 0, −1 among your base attributes. Your heritage bonus is added automatically.</p><div class="attribute-inputs">${R.attributes.map((s,i)=>`<div class="field"><label for="a-${s}">${s}</label><input id="a-${s}" type="number" min="-10000" max="10000" step="any" data-stat="${s}" value="${esc(character.attributes[s])}"><small>${R.descriptions[i]}</small></div>`).join('')}</div><h3>Add a modifier you have agreed with your GM</h3><p>Only unconditional entries add to totals. Always name the source; use a condition for situational effects.</p><form id="modifier-form" class="modifier-form"><label>Attribute<select name="stat">${R.attributes.map(s=>`<option>${s}</option>`).join('')}</select></label><label>Amount<input name="amount" type="number" min="-10000" max="10000" step="any" required></label><label>Source<input name="source" placeholder="Rule or item granting this bonus" maxlength="500" required></label><label>Condition (optional)<input name="condition" placeholder="Only when…" maxlength="500"></label><button class="primary">Add modifier</button></form>${modifierList(true)}<div id="live-totals" aria-live="polite">${statTable(R.compile(character))}</div><h3>Vitality and Qi</h3><p>Realm, stage and physique bonuses are included automatically. Use these optional adjustments for other resource effects.</p><div class="grid">${['vitality','qi'].map(k=>`<label>${k==='vitality'?'Additional Vitality adjustment':'Additional Qi adjustment'}<input type="number" min="-10000" max="10000" step="any" data-resource="${k}" value="${esc(character.resourceBonuses[k])}"></label>`).join('')}</div><div id="live-resources">${resourceSummary(R.compile(character))}</div>`;
+  if(n===5) body=field('dao','A belief, question or obsession that may become your Dao.',true)+field('flaw','Choose a flaw that can complicate your journey.')+field('bonds','NPC, relationship and bond rating. Range: −2 to +3.',true)+field('reputation','Track standing separately for each faction. Range: −3 to +3.',true)+field('karma','Record debts, enmities and oaths; karma is distinct from morality.',true)+field('notes','Record resources, wounds and advancement.',true);
+  $('panel').innerHTML='<section>'+(n===6?review():`<h2 tabindex="-1">〔${titles[n]}〕</h2>${body}`)+'</section>';
+  $('back').disabled=n===0; $('next').hidden=n===6; $('progress').textContent=`Step ${n+1} of 7`;
   if(focus) $('panel').querySelector('h2').focus();
 }
 document.addEventListener('input', e=>{
   const t=e.target;
+  if(t.dataset.study){
+    const chapter=Number(t.value);if(!Number.isInteger(chapter)||chapter<1||chapter>4)return;
+    character.manualStudy.vaultRatChapter=chapter;save();render();return;
+  }
+  if(t.dataset.art){
+    if(!R.techniques.available(character).some(a=>a.id===t.dataset.art))return;
+    character.learnedTechniques=t.checked?[...new Set([...character.learnedTechniques,t.dataset.art])]:character.learnedTechniques.filter(id=>id!==t.dataset.art);
+    $('technique-count').textContent=R.techniques.selected(character).length+' learned arts on your sheet.';save();return;
+  }
   if(t.dataset.rootToggle){
     const name=t.dataset.rootToggle;if(!Object.hasOwn(R.cultivation.roots,name))return;
     const selected=character.roots||[];
@@ -206,7 +238,7 @@ document.addEventListener('submit',e=>{
   character.modifiers.push({stat:f.get('stat'),amount:Number(f.get('amount')),source,condition:String(f.get('condition')).trim()});save();render();
 });
 $('back').onclick=()=>{character.step=Math.max(0,character.step-1);save();render(true);};
-$('next').onclick=()=>{character.step=Math.min(5,character.step+1);save();render(true);};
+$('next').onclick=()=>{character.step=Math.min(6,character.step+1);save();render(true);};
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify(character,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='xianxia-character.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 $('import').onchange=async e=>{
   const file=e.target.files[0];if(!file)return;

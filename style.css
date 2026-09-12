@@ -103,3 +103,9 @@ dt { font-weight: bold; color: #425f51; } dd { margin: 3px 0 0; white-space: pre
 .root-card p { margin:8px 0; }
 .root-toggle input { width:auto; margin-right:8px; }
 .root-card:has(input:checked) { border-color:#2f463b; background:#edf0e5; }
+
+.technique-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+.technique-card { border:1px solid #b8a77b; padding:16px; margin:12px 0; break-inside:avoid; }
+.technique-card h4 { margin:0 0 8px; }
+.technique-card input { width:auto; margin-right:8px; }
+.technique-card p { margin:8px 0; }

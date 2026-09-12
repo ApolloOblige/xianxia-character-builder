@@ -95,3 +95,7 @@ The owner authorized original modifiers and plant choices. [HERITAGE-RULES.md](H
 ## Disciplines and training expansion
 
 [TRAINING-RULES.md](TRAINING-RULES.md) defines the implemented discipline, manual, trade and talent choices, weapon grants, shared situational bonus cap and sources. It supersedes earlier statements that no discipline equipment was granted.
+
+## Techniques page
+
+[TECHNIQUE-RULES.md](TECHNIQUE-RULES.md) documents the seventh-page-layout migration, Silent Vault-Rat Scripture arts and Qi recovery adaptations. Only the selected custom manual is expanded.

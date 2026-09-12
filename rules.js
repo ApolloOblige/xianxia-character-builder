@@ -1,5 +1,6 @@
 /* Source-derived draft options. No implied numerical bonuses. */
 (function (root) {
+  const A=root.BuilderTechniques || (typeof require!=='undefined' ? require('./techniques.js') : null);
   const T=root.BuilderTraining || (typeof require!=='undefined' ? require('./training.js') : null);
   const C=root.BuilderCultivation || (typeof require!=='undefined' ? require('./cultivation.js') : null);
   const H=root.BuilderHeritages || (typeof require!=='undefined' ? require('./heritages.js') : null);
@@ -73,11 +74,22 @@
     'Mutated Root': 'An unusual affinity expressed through your techniques.'
   };
   const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'];
-  function empty() { return {version:1, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
+  function empty() { return {version:1, layoutVersion:2, learnedTechniques:[], manualStudy:{vaultRatChapter:1}, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
   function number(value) { return value !== '' && value != null && Number.isFinite(Number(value)) ? Number(value) : null; }
   function validate(data) {
     if (!data || data.version !== 1 || !data.fields || !data.attributes || !Array.isArray(data.modifiers) || data.modifiers.length > 100) throw Error('This is not a supported character save. Your current character has been kept.');
     const clean = empty();
+    if(data.layoutVersion!==undefined && data.layoutVersion!==2)throw Error('This save uses an unsupported page layout.');
+    if(data.learnedTechniques!==undefined){
+      const ids=data.learnedTechniques;
+      if(!Array.isArray(ids)||ids.length>A.arts.length||new Set(ids).size!==ids.length||ids.some(id=>!A.arts.some(a=>a.id===id)))throw Error('The saved technique selections are invalid.');
+      clean.learnedTechniques=[...ids];
+    }
+    if(data.manualStudy!==undefined){
+      const chapter=data.manualStudy?.vaultRatChapter;
+      if(!Number.isInteger(chapter)||chapter<1||chapter>4)throw Error('The saved manual chapter is invalid.');
+      clean.manualStudy={vaultRatChapter:chapter};
+    }
     if(data.roots!=null){
       if(!Array.isArray(data.roots)||data.roots.length>5||new Set(data.roots.map(r=>r?.name)).size!==data.roots.length||data.roots.some(r=>!r||(!own(C.roots,r.name)&&!['Yin','Yang'].includes(r.name))||(r.polarity!==undefined&&!['None','Yin','Yang'].includes(r.polarity))||(r.purity!==''&&(!Number.isInteger(r.purity)||r.purity<1||r.purity>100))))throw Error('Choose up to five different roots, each with purity from 1 to 100.');
       clean.roots=data.roots.filter(r=>!['Yin','Yang'].includes(r.name)).map(r=>({name:r.name,purity:r.purity,...(r.polarity!==undefined?{polarity:r.polarity}:{})}));
@@ -106,7 +118,8 @@
       clean.modifiers.push({stat:m.stat,amount:m.amount,source:m.source,condition:m.condition});
     }
     for (const k of ['vitality','qi']) { const v=data.resourceBonuses?.[k]; if (v !== '' && (typeof v !== 'number' || !Number.isFinite(v) || Math.abs(v)>10000)) throw Error('A saved resource bonus is invalid.'); clean.resourceBonuses[k]=v; }
-    clean.step=Number.isInteger(data.step) && data.step>=0 && data.step<6 ? data.step:0;
+    const oldLayout=data.layoutVersion===undefined;
+    clean.step=Number.isInteger(data.step) && data.step>=0 && data.step<(oldLayout?6:7) ? data.step+(oldLayout&&data.step>=3?1:0):0;
     return clean;
   }
   function compile(c) {
@@ -126,9 +139,9 @@
       if(totals[stat]===null || (automatic===null && extra===null))return null;
       return base+totals[stat]+(automatic||0)+physique+(extra||0);
     };
-    return {totals,contributions,heritage,cultivation,training:T.effects(c),vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.roots===null && c.fields.root==='Fire Root'};
+    return {techniques:A.selected(c),totals,contributions,heritage,cultivation,training:T.effects(c),vitality:derived(6,'Body','vitality'),qi:derived(3,'Flow','qi'),conditional:c.modifiers.filter(m=>m.condition.trim()),fire:c.roots===null && c.fields.root==='Fire Root'};
   }
-  const api={training:T,cultivation:C,heritageTraits,heritageBonus,heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
+  const api={techniques:A,training:T,cultivation:C,heritageTraits,heritageBonus,heritageCategories,heritageGroups:H.groups,originSources:O.sources,inferHeritageCategory,setHeritageCategory,startingPackage,setOrigin,hasHeritage,pathContext,attributes,descriptions,options,rootNotes,fields,empty,validate,compile};
   root.BuilderRules=api;
   if (typeof module!=='undefined') module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -304,6 +304,7 @@ const manuals={
     "condition": "identifying a spiritual toxin from a safely contained sample"
   }
 };
+manuals['Silent Vault-Rat Scripture']={discipline:'Beast Tamer',description:'Teaches silent partnership with one Artifact-Devouring Rat, reconnaissance, concealment, artifact sabotage and coordinated escape.',condition:'coordinating infiltration with your bonded Artifact-Devouring Rat'};
 const trades={
   "Pill Crafter / Alchemist": {
     "description": "Prepare medicinal ingredients and refine pills. Requires recipes, ingredients, a cauldron and controlled heat.",
