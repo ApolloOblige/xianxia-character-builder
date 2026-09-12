@@ -403,6 +403,9 @@ const talents={
 };
 disciplines['Thunder Chain Cultivator']={weapon:'Kusarigama with a short tanto at the chain’s free end',manual:"Shadow-Splitting Thunder Chain Art",description:'Conceal chain paths, restrain a target, strike precisely and withdraw.'};
 manuals["Shadow-Splitting Thunder Chain Art"]={discipline:'Thunder Chain Cultivator',description:'Teaches concealed chain control, precise Metal strikes, Shadow restraint and Lightning escapes through five chapters.',condition:'using concealed chain control to create an opening or escape'};
+disciplines['Puppet Cultivator']={weapon:'',description:'Construct and direct forged puppets through spiritual control and engraved routines.',manual:"Ten Thousand Venoms Cauldron-Puppet Scripture"};
+manuals["Ten Thousand Venoms Cauldron-Puppet Scripture"]={discipline:'Puppet Cultivator',description:'Build a mobile cauldron puppet, extract and store essences, automate known recipes and ultimately attempt true spiritual awakening.',condition:'controlling a cauldron puppet during poison refinement'};
+manuals["Ninefold Crushing Force Manual"]={discipline:'Hammer Cultivator',description:'Train stance, whole-body strength, linked momentum, braced defense and measured heavy-weapon impact.',condition:'controlling heavy-weapon force through stance and body mechanics'};
 function get(table,key){return Object.prototype.hasOwnProperty.call(table,key)?table[key]:null;}
 function effects(c){
  const d=get(disciplines,c.fields.discipline);

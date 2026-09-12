@@ -74,7 +74,7 @@
     'Mutated Root': 'An unusual affinity expressed through your techniques.'
   };
   const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'];
-  function empty() { return {version:1, layoutVersion:2, companion:{category:"",species:"",name:"",realm:"Mortal",infusion:""}, learnedTechniques:[], masteredTechniques:[], manualStudy:{vaultRatChapter:1,thunderChainChapter:1}, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
+  function empty() { return {version:1, layoutVersion:2, companion:{category:"",species:"",name:"",realm:"Mortal",infusion:""}, learnedTechniques:[], masteredTechniques:[], manualStudy:Object.fromEntries(A.manuals.map(m=>[m.key,1])), step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
   function number(value) { return value !== '' && value != null && Number.isFinite(Number(value)) ? Number(value) : null; }
   function validate(data) {
     if (!data || data.version !== 1 || !data.fields || !data.attributes || !Array.isArray(data.modifiers) || data.modifiers.length > 100) throw Error('This is not a supported character save. Your current character has been kept.');

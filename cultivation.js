@@ -102,6 +102,7 @@
     ['Heavenly Molting Physique',2,0,'recovering from bodily cultivation strain','Once per session, a safe hour of molting restores 2 Vitality; interruption prevents recovery.'],
     ['Heaven-Devouring Meridian Physique',0,3,'absorbing ambient qi during cultivation','−1 stabilizing unfamiliar or contaminated qi.']
   ].forEach(([name,vitality,qi,condition,drawback])=>physiques[name]={vitality,qi,condition,drawback});
+  physiques['Golden Furnace Physique']={vitality:0,qi:0,condition:'resisting toxins or metabolizing harmful qi during controlled internal poison refinement',drawback:'The body runs hot and aggressively refines harmful qi. A safe, assessed dose can be held and refined without immediate injury while circulation remains controlled. Excessive potency, an incompatible dose or interrupted control can still cause poisoning; resistance is not immunity. This physique does not supply a Poison root or Yang polarity.'};
   const get=(table,key)=>Object.prototype.hasOwnProperty.call(table,key)?table[key]:null;
   function effects(c){
     const realm=get(realms,c.fields.realm), physique=get(physiques,c.fields.physique);
