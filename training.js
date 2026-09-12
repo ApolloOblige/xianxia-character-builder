@@ -401,6 +401,8 @@ const talents={
     "condition": "keeping your footing on unstable ground"
   }
 };
+disciplines['Thunder Chain Cultivator']={weapon:'Kusarigama with a short tanto at the chain’s free end',manual:"Shadow-Splitting Thunder Chain Art",description:'Conceal chain paths, restrain a target, strike precisely and withdraw.'};
+manuals["Shadow-Splitting Thunder Chain Art"]={discipline:'Thunder Chain Cultivator',description:'Teaches concealed chain control, precise Metal strikes, Shadow restraint and Lightning escapes through five chapters.',condition:'using concealed chain control to create an opening or escape'};
 function get(table,key){return Object.prototype.hasOwnProperty.call(table,key)?table[key]:null;}
 function effects(c){
  const d=get(disciplines,c.fields.discipline);

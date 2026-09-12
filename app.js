@@ -140,23 +140,25 @@ function qiRestReference(){
  return '<div class="starting-kit"><h3>Qi & cultivation rests</h3><p><strong>Maximum Qi: '+(qi===null?'Complete your realm and attributes':qi)+'</strong>. Pay the listed cost from your remaining Qi whenever you use an art. 0-Qi arts are repeatable; paid arts require enough Qi. Companion arts use the tamer’s reserve.</p><p><strong>Brief cultivation:</strong> '+esc(R.techniques.rest.brief)+(qi!==null?' Recover '+Math.ceil(Math.max(0,qi)/2)+' Qi.':'')+'</p><p><strong>Full cultivation:</strong> '+esc(R.techniques.rest.full)+'</p><small>'+esc(R.techniques.rest.limits)+'</small></div>';
 }
 function techniqueCard(a,editable=false){
- const unlocked=R.techniques.available(character).some(x=>x.id===a.id),checked=character.learnedTechniques.includes(a.id);
- return '<article class="technique-card"><h4>'+(editable?'<label><input type="checkbox" data-art="'+a.id+'" '+(checked?'checked ':'')+(!unlocked?'disabled ':'')+'>'+esc(a.name)+'</label>':esc(a.name))+'</h4><p><strong>'+(a.qi===0?'0 Qi · repeatable':a.qi+' Qi'+(a.id==='quiet-devouring'?' additional':''))+'</strong> · '+esc(a.timing)+'</p><p>'+esc(a.effect)+'</p><small><strong>Limits:</strong> '+esc(a.limit)+'</small><small><strong>Resolution:</strong> '+esc(a.roll)+'</small>'+(!unlocked&&editable?'<small>Requires study of Chapter '+a.chapter+'.</small>':'')+'</article>';
+ const A=R.techniques,unlocked=A.available(character).some(x=>x.id===a.id),checked=character.learnedTechniques.includes(a.id),mastered=character.masteredTechniques.includes(a.id);
+ const prerequisites=a.requires.map(id=>A.arts.find(x=>x.id===id).name).join(', ');
+ return '<article class="technique-card"><h4>'+(editable?'<label><input type="checkbox" data-art="'+a.id+'" '+(checked?'checked ':'')+(!unlocked&&!checked?'disabled ':'')+'>'+esc(a.name)+'</label>':esc(a.name))+'</h4><small>'+esc(a.manual)+' · Chapter '+a.chapter+'</small><p><strong>'+a.qi+' Qi'+(a.qi===0?' · repeatable':'')+(a.id==='quiet-devouring'?' additional':'')+'</strong> · '+esc(a.timing)+'</p><p>'+esc(a.effect)+'</p><small><strong>Limits:</strong> '+esc(a.limit)+'</small><small><strong>Resolution:</strong> '+esc(a.roll)+'</small>'+(a.yin?'<p><strong>Yin · +1 Qi ('+(a.qi+1)+' total):</strong> '+esc(a.yin)+'</p>':'')+(prerequisites?'<p><strong>Master first:</strong> '+esc(prerequisites)+'.</p>':'')+(editable?'<label><input type="checkbox" data-mastery="'+a.id+'" '+(mastered?'checked ':'')+(!checked||!unlocked?'disabled ':'')+'> Mastered</label>':mastered?'<p>Mastered</p>':'')+(!unlocked&&editable?'<small>Inactive: reach Chapter '+a.chapter+' and master all prerequisites. Saved selections remain, but inactive arts do not appear on your sheet.</small>':'')+'</article>';
 }
 function techniquesPage(){
- const A=R.techniques,active=A.hasManual(character);
- let body='<p>Mark the arts you have learned. Only learned arts from a selected manual and a studied chapter appear on your reference sheet.</p>'+qiRestReference();
- if(!active)return body+'<p>Select the Silent Vault-Rat Scripture as a primary or supporting manual on Disciplines & Gear to choose its arts.</p><p>Your selected manuals have no selectable arts in this catalogue yet.</p>';
- body+='<h3>Silent Vault-Rat Scripture</h3><p>One deeply bonded Artifact-Devouring Rat. Scout, enter unseen, disable what matters and escape. Selecting this manual does not create a companion; bond-dependent arts require your rat to be present and able to act.</p><label for="manual-chapter">Chapter reached through study</label><select id="manual-chapter" data-study="vaultRatChapter">'+A.chapters.map((name,i)=>'<option value="'+(i+1)+'" '+(character.manualStudy.vaultRatChapter===i+1?'selected':'')+'>Chapter '+(i+1)+' · '+esc(name)+'</option>').join('')+'</select><p>Choose the chapter your character has actually studied. Learning an art does not automatically master every advanced use.</p><p id="technique-count" role="status">'+A.selected(character).length+' learned arts on your sheet.</p>';
- body+=A.chapters.map((chapter,i)=>'<h3>Chapter '+(i+1)+' · '+esc(chapter)+'</h3><div class="technique-grid">'+A.arts.filter(a=>a.chapter===i+1).map(a=>techniqueCard(a,true)).join('')+'</div>').join('');
- return body+'<p>When an outcome is uncertain or opposed, roll the listed attribute using the normal 2d6 rules. Pay Qi even if the roll fails. An action takes your main turn; a reaction is an immediate response, at most once per round. A scene is one continuous encounter. Technique, training and cultivation bonuses share the existing +2 positive situational limit. Learning or selecting an art does not spend Qi.</p>';
+ const A=R.techniques,manuals=A.manuals.filter(m=>A.hasManual(character,m.name));
+ let body='<p>Select learned arts, then mark mastery earned through training and play. Learning alone does not grant mastery. Advanced arts require all listed leading arts to be mastered. Changing chapters or mastery can make later arts inactive without erasing saved choices.</p>'+qiRestReference();
+ if(!manuals.length)return body+'<p>Select Silent Vault-Rat Scripture or Shadow-Splitting Thunder Chain Art on Disciplines & Gear to choose its arts. Other manuals have no selectable arts yet.</p>';
+ body+='<p id="technique-count" role="status">'+A.selected(character).length+' learned arts on your sheet.</p>';
+ for(const m of manuals){body+='<h3>'+esc(m.name)+'</h3><p>'+esc(m.description)+'</p><label for="study-'+m.key+'">Chapter reached through study</label><select id="study-'+m.key+'" data-study="'+m.key+'">'+m.chapters.map((name,i)=>'<option value="'+(i+1)+'" '+(character.manualStudy[m.key]===i+1?'selected':'')+'>Chapter '+(i+1)+' · '+esc(name)+'</option>').join('')+'</select>';
+ body+=m.chapters.map((chapter,i)=>'<h3>Chapter '+(i+1)+' · '+esc(chapter)+'</h3><div class="technique-grid">'+A.arts.filter(a=>a.manual===m.name&&a.chapter===i+1).map(a=>techniqueCard(a,true)).join('')+'</div>').join('');}
+ return body+'<p>Pay Qi when used, even on a failed roll. An action takes your main turn; a reaction is an immediate response, at most once per round. A scene is one continuous encounter. All positive situational bonuses share the +2 limit. Selecting or mastering an art does not spend Qi. Mastery is recorded after training agreed with your GM.</p>';
 }
 function techniqueSheet(){
- const arts=R.techniques.selected(character);
- return '<h3>Learned techniques</h3>'+(arts.length?'<p>Silent Vault-Rat Scripture · Chapter '+character.manualStudy.vaultRatChapter+'. Requires the bonded companion where stated. Pay Qi when used, including on a failed roll. All positive situational bonuses share the +2 limit.</p>'+arts.map(a=>techniqueCard(a)).join(''):'<p>No active learned techniques selected.</p>')+qiRestReference();
+ const A=R.techniques,arts=A.selected(character);
+ return '<h3>Learned techniques</h3>'+(arts.length?A.manuals.filter(m=>arts.some(a=>a.manual===m.name)).map(m=>'<h3>'+esc(m.name)+'</h3><p>Chapter '+character.manualStudy[m.key]+' · '+esc(m.description)+'</p>'+arts.filter(a=>a.manual===m.name).map(a=>techniqueCard(a)).join('')).join(''):'<p>No active learned techniques selected.</p>')+'<p>Pay Qi on use, including failed rolls. All positive situational bonuses share the +2 limit. At most one reaction per round.</p>'+qiRestReference();
 }
 
-function review() {
+  function review() {
   const c=R.compile(character);
   return `<div class="sheet-heading"><h2 tabindex="-1">〔${esc(character.fields.name)||'Unnamed character'}〕</h2><button id="print">Print sheet</button></div>
   <dl class="sheet-fields">${R.fields.filter(k=>!['name','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'].includes(k) && (!['heritage','heritageCategory'].includes(k) || R.hasHeritage(character))).map(k=>`<div><dt>${labels[k]}</dt><dd>${esc(character.fields[k])||'Not set'}</dd></div>`).join('')}</dl>
@@ -180,13 +182,18 @@ function render(focus=false) {
 document.addEventListener('input', e=>{
   const t=e.target;
   if(t.dataset.study){
-    const chapter=Number(t.value);if(!Number.isInteger(chapter)||chapter<1||chapter>4)return;
-    character.manualStudy.vaultRatChapter=chapter;save();render();return;
+    const m=R.techniques.manuals.find(m=>m.key===t.dataset.study),chapter=Number(t.value);if(!m||!Number.isInteger(chapter)||chapter<1||chapter>m.chapters.length)return;
+    character.manualStudy[m.key]=chapter;save();render();return;
+  }
+  if(t.dataset.mastery){
+    const id=t.dataset.mastery;if(!character.learnedTechniques.includes(id)||!R.techniques.available(character).some(a=>a.id===id))return;
+    character.masteredTechniques=t.checked?[...new Set([...character.masteredTechniques,id])]:character.masteredTechniques.filter(x=>x!==id);save();render();return;
   }
   if(t.dataset.art){
-    if(!R.techniques.available(character).some(a=>a.id===t.dataset.art))return;
-    character.learnedTechniques=t.checked?[...new Set([...character.learnedTechniques,t.dataset.art])]:character.learnedTechniques.filter(id=>id!==t.dataset.art);
-    $('technique-count').textContent=R.techniques.selected(character).length+' learned arts on your sheet.';save();return;
+    const id=t.dataset.art;if(t.checked&&!R.techniques.available(character).some(a=>a.id===id))return;
+    character.learnedTechniques=t.checked?[...new Set([...character.learnedTechniques,id])]:character.learnedTechniques.filter(x=>x!==id);
+    if(!t.checked)character.masteredTechniques=character.masteredTechniques.filter(x=>x!==id);
+    save();render();return;
   }
   if(t.dataset.rootToggle){
     const name=t.dataset.rootToggle;if(!Object.hasOwn(R.cultivation.roots,name))return;

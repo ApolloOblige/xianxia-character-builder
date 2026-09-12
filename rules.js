@@ -74,7 +74,7 @@
     'Mutated Root': 'An unusual affinity expressed through your techniques.'
   };
   const fields = ['name','path','origin','heritageCategory','heritage','realm','stage','root','rootsDetail','purity','physique','discipline','techniques','equipment','trade','dao','flaw','bonds','reputation','karma','notes','manualPrimary','manualSecondary','tradePrimary','tradeSecondary','talent'];
-  function empty() { return {version:1, layoutVersion:2, learnedTechniques:[], manualStudy:{vaultRatChapter:1}, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
+  function empty() { return {version:1, layoutVersion:2, learnedTechniques:[], masteredTechniques:[], manualStudy:{vaultRatChapter:1,thunderChainChapter:1}, step:0, fields:Object.fromEntries(fields.map(k=>[k,''])), attributes:Object.fromEntries(attributes.map(k=>[k,''])), modifiers:[], resourceBonuses:{vitality:'',qi:''},startingPackage:null,roots:null}; }
   function number(value) { return value !== '' && value != null && Number.isFinite(Number(value)) ? Number(value) : null; }
   function validate(data) {
     if (!data || data.version !== 1 || !data.fields || !data.attributes || !Array.isArray(data.modifiers) || data.modifiers.length > 100) throw Error('This is not a supported character save. Your current character has been kept.');
@@ -85,10 +85,13 @@
       if(!Array.isArray(ids)||ids.length>A.arts.length||new Set(ids).size!==ids.length||ids.some(id=>!A.arts.some(a=>a.id===id)))throw Error('The saved technique selections are invalid.');
       clean.learnedTechniques=[...ids];
     }
+    if(data.masteredTechniques!==undefined){
+      const ids=data.masteredTechniques;
+      if(!Array.isArray(ids)||new Set(ids).size!==ids.length||ids.some(id=>!clean.learnedTechniques.includes(id)))throw Error('Mastered arts must also be learned.');
+      clean.masteredTechniques=[...ids];
+    }
     if(data.manualStudy!==undefined){
-      const chapter=data.manualStudy?.vaultRatChapter;
-      if(!Number.isInteger(chapter)||chapter<1||chapter>4)throw Error('The saved manual chapter is invalid.');
-      clean.manualStudy={vaultRatChapter:chapter};
+      for(const m of A.manuals){const chapter=data.manualStudy?.[m.key]??1;if(!Number.isInteger(chapter)||chapter<1||chapter>m.chapters.length)throw Error('The saved manual chapter is invalid.');clean.manualStudy[m.key]=chapter;}
     }
     if(data.roots!=null){
       if(!Array.isArray(data.roots)||data.roots.length>5||new Set(data.roots.map(r=>r?.name)).size!==data.roots.length||data.roots.some(r=>!r||(!own(C.roots,r.name)&&!['Yin','Yang'].includes(r.name))||(r.polarity!==undefined&&!['None','Yin','Yang'].includes(r.polarity))||(r.purity!==''&&(!Number.isInteger(r.purity)||r.purity<1||r.purity>100))))throw Error('Choose up to five different roots, each with purity from 1 to 100.');
